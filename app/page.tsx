@@ -92,12 +92,12 @@ const theme = {
   "--b-ink": "#0B0B0C",
   "--b-acc": "#0B0B0C",
   "--b-acc2": "#17171A",
-  "--b-canvas": "#F2EDE4",
-  "--b-page": "#D9D4CA",
-  "--b-wash": "#EAE5DB",
+  "--b-canvas": "#F4F4F2",
+  "--b-page": "#DCDCD9",
+  "--b-wash": "#EFEFED",
   "--b-line": "rgba(11,11,12,0.14)",
   "--b-gray": "#5E5E63",
-  "--b-soft": "#E1DBCF",
+  "--b-soft": "#E6E6E3",
   "--b-r": "28px",
   "--b-r-s": "14px",
 } as CSSProperties;
@@ -502,12 +502,12 @@ const PAPER_SHADOW = "drop-shadow(0 14px 14px rgba(11,11,12,0.18))";
 const PAPER_TOP_FILL = "#0B0B0C";
 const PAPER_BODY = "bg-white";
 const PAPER_HEAD = "flex items-start justify-between gap-4 bg-[var(--b-ink)] px-5 pb-5 pt-3 text-white";
-const SUM_BOX = "rounded-2xl bg-[var(--b-wash)] p-4";
-const TILE = "rounded-2xl bg-[var(--b-wash)]";
+const SUM_BOX = "rounded-2xl border border-black/20 bg-white p-4";
+const TILE = "rounded-2xl border border-black/20 bg-white";
 const SIZE_BADGE = "rounded-full bg-[var(--b-ink)] text-white";
 const DISC_PILL = "rounded-full bg-[var(--b-ink)] text-white";
 const NET_LINE = "border-black/30";
-const NET_WRAP = "mt-3.5 rounded-2xl bg-[var(--b-soft)] px-4 py-4 text-[var(--b-ink)]";
+const NET_WRAP = "mt-3.5 rounded-2xl border-2 border-[var(--b-ink)] bg-white px-4 py-4 text-[var(--b-ink)]";
 const NET_AMT = "text-[38px]";
 const ACTION_BTN = `${MONO} flex min-w-0 flex-col items-center gap-2 rounded-2xl border-2 border-[var(--b-ink)] px-1 py-3.5 text-center text-[11px] font-bold uppercase leading-tight tracking-[0.04em] active:bg-[var(--b-ink)] active:text-white [@media(hover:hover)]:hover:bg-[var(--b-ink)] [@media(hover:hover)]:hover:text-white ${FOCUS}`;
 const STORE_LINE = "border-black/25";
@@ -626,15 +626,17 @@ function PaperEdge({ down = false, fill = "#fff" }: { down?: boolean; fill?: str
 /** Black signage block: giant name, a tilted price sticker, a points stamp and a scrolling ticker. */
 function Hero({ data, logoSrc, chip, total, earned }: { data: Receipt; logoSrc: string; chip: ReactNode; total: number; earned: number }) {
   const first = data.customer.name.split(" ")[0];
-  const size = Math.min(80, Math.max(34, Math.floor(340 / (0.62 * first.length + 0.9))));
+  const size = Math.min(52, Math.max(30, Math.floor(300 / (0.62 * first.length + 0.9))));
   const ticker = `Thank you for shopping at ${data.store.name}  ✦  ${data.date.split(" ")[0]}  ✦  `;
   return (
     <header className="relative overflow-hidden rounded-b-[40px] bg-[var(--b-ink)] pt-5 text-white">
       <div className="flex items-center justify-between gap-3 px-5">
-        <BrandImage src={logoSrc} alt="NEXT" width={320} height={80} priority className="h-6 w-auto max-w-[45%] object-contain object-left brightness-0 invert" fallbackClassName="nx-bold text-[26px] uppercase tracking-[0.04em]" />
+        <BrandImage src={logoSrc} alt="NEXT" width={320} height={80} priority className="h-9 w-auto max-w-[58%] object-contain object-left brightness-0 invert" fallbackClassName="nx-bold text-[26px] uppercase tracking-[0.04em]" />
         {chip}
       </div>
-      <div className="px-5">
+      <span aria-hidden="true" className="pointer-events-none absolute -right-8 top-[88px] h-40 w-40 rotate-12 rounded-[28px]" style={{ backgroundImage: "repeating-linear-gradient(135deg, rgba(255,255,255,0.22) 0 2px, transparent 2px 11px)" }} />
+      <span aria-hidden="true" className="pointer-events-none absolute right-5 top-[112px] h-14 w-14 rotate-12 rounded-full border-2 border-white/60" />
+      <div className="relative px-5">
         <p className="mt-9 text-[13px] uppercase tracking-[0.32em] text-white/60">Hello</p>
         <h1 className="nx-bold mt-1 uppercase leading-[0.9] tracking-[-0.03em] [overflow-wrap:anywhere]" style={{ fontSize: size }}>
           {first}.

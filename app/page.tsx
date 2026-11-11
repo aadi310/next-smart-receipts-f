@@ -497,7 +497,7 @@ const ALERT_CARD = "rounded-[28px] border-2 border-[var(--b-ink)] bg-white";
 const REFER_CARD = `rounded-[28px] border-2 border-[var(--b-ink)] bg-white active:bg-[var(--b-wash)] ${FOCUS}`;
 const REFER_CODE = "rounded-full bg-[var(--b-ink)] text-white";
 const REFER_ARROW = "bg-[var(--b-ink)] text-white";
-const PAPER_WRAP = "mx-3 mt-10";
+const PAPER_WRAP = "mx-3 mt-6";
 const PAPER_SHADOW = "drop-shadow(0 14px 14px rgba(11,11,12,0.18))";
 const PAPER_TOP_FILL = "#0B0B0C";
 const PAPER_BODY = "bg-white";
@@ -624,7 +624,7 @@ function PaperEdge({ down = false, fill = "#fff" }: { down?: boolean; fill?: str
 }
 
 /** Black signage block: giant name, a tilted price sticker, a points stamp and a scrolling ticker. */
-function Hero({ data, logoSrc, chip, total, earned }: { data: Receipt; logoSrc: string; chip: ReactNode; total: number; earned: number }) {
+function Hero({ data, logoSrc, chip, total, earned, feedback }: { data: Receipt; logoSrc: string; chip: ReactNode; total: number; earned: number; feedback?: ReactNode }) {
   const first = data.customer.name.split(" ")[0];
   const size = Math.min(52, Math.max(30, Math.floor(300 / (0.62 * first.length + 0.9))));
   const ticker = `Thank you for shopping at ${data.store.name}  ✦  ${data.date.split(" ")[0]}  ✦  `;
@@ -642,7 +642,8 @@ function Hero({ data, logoSrc, chip, total, earned }: { data: Receipt; logoSrc: 
           {first}.
         </h1>
       </div>
-      <div className="mx-5 mt-7 flex items-center gap-3">
+      <div className="relative mx-5 mt-6 text-[var(--b-ink)]">{feedback}</div>
+      <div className="mx-5 mt-4 flex items-center gap-3">
         <div className="min-w-0 flex-1 -rotate-1 rounded-2xl bg-white p-4 text-[var(--b-ink)] shadow-[0_14px_24px_-12px_rgba(0,0,0,0.8)]">
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--b-gray)]">Total paid</p>
           <p className="nx-bold mt-1 text-[32px] leading-none tracking-[-0.02em] tabular-nums">₹{inr(total)}</p>
@@ -712,7 +713,7 @@ function StoreShell({ children }: { children: ReactNode }) {
 /** White stub under a scalloped edge. */
 function StubShell({ children }: { children: ReactNode }) {
   return (
-    <footer className="mt-12" style={{ filter: "drop-shadow(0 -6px 10px rgba(11,11,12,0.12))" }}>
+    <footer className="mt-8" style={{ filter: "drop-shadow(0 -6px 10px rgba(11,11,12,0.12))" }}>
       <PaperEdge />
       <div className="bg-white px-5 pb-10 pt-5 text-[var(--b-ink)]">{children}</div>
     </footer>
@@ -1245,9 +1246,9 @@ const FEEDBACK_ROWS = [
   { key: "value", label: "Value" },
 ] as const;
 
-function Stars({ value, onChange, size = "h-9 w-9", label }: { value: number; onChange: (n: number) => void; size?: string; label: string }) {
+function Stars({ value, onChange, size = "h-9 w-9", label, spread = false }: { value: number; onChange: (n: number) => void; size?: string; label: string; spread?: boolean }) {
   return (
-    <div role="radiogroup" aria-label={label} className="flex gap-1.5">
+    <div role="radiogroup" aria-label={label} className={spread ? "flex justify-between px-1" : "flex gap-1.5"}>
       {[1, 2, 3, 4, 5].map((n) => (
         <button key={n} type="button" role="radio" aria-checked={value === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => onChange(n)} className={`text-[var(--b-acc)] ${FOCUS}`}>
           <svg viewBox="0 0 24 24" strokeWidth="1.6" strokeLinejoin="round" style={{ animationDelay: `${n * 0.2}s` }} className={`${size} stroke-current ${value === 0 ? "nx-star" : n <= value ? "fill-current" : "fill-transparent"}`}>
@@ -1267,24 +1268,24 @@ function FeedbackBox({ data, onSubmit }: { data: Receipt; onSubmit?: (v: Feedbac
 
   if (done) {
     return (
-      <div className={`${CARD} p-5`} aria-live="polite">
+      <div className={`${CARD} px-5 py-4`} aria-live="polite">
         <span className={`${DISPLAY} block text-[26px] leading-none`}>Thank you</span>
         <p className="mt-2 text-[15px] text-[var(--b-gray)]">Your feedback has been shared with the {data.store.name} team.</p>
       </div>
     );
   }
   return (
-    <div className={`${CARD} p-5`}>
-      <span className={`${DISPLAY} block text-[28px] leading-none`}>Rate your visit</span>
-      <div className="mt-4">
-        <Stars value={overall} onChange={setOverall} label="Overall rating" />
+    <div className={`${CARD} px-5 pb-4 pt-4`}>
+      <div className="flex items-baseline justify-between gap-3">
+        <span className={`${DISPLAY} block text-[22px] leading-none`}>Rate your visit</span>
+        <span className="text-[13px] text-[var(--b-gray)]" aria-live="polite">{overall ? RATING_WORDS[overall - 1] : "Tap a star"}</span>
       </div>
-      <p className="mt-3 text-[15px] leading-snug text-[var(--b-gray)]" aria-live="polite">
-        {overall ? RATING_WORDS[overall - 1] : `Tell us about your shopping experience at ${BRAND}.`}
-      </p>
+      <div className="mt-3.5">
+        <Stars value={overall} onChange={setOverall} label="Overall rating" size="h-10 w-10" spread />
+      </div>
       <Collapse open={overall > 0} id="feedback-more">
         <form
-          className="space-y-4 pt-5"
+          className="space-y-4 pt-4"
           onSubmit={(e) => {
             e.preventDefault();
             onSubmit?.({ invoiceNo: data.invoiceNo, overall, categories: cats, comment });
@@ -1346,12 +1347,12 @@ function ReceiptView({ data, history, onSelect, qrSrc, barcodeSrc, logoSrc = DEF
 
       <main style={zoomStyle(scale)} className={MAIN_CLASS}>
         {/* 1. Greeting */}
-        <Hero data={data} logoSrc={logoSrc} chip={club ? <TierChip tier={club.tier} /> : null} total={t.total} earned={earned} />
+        <Hero data={data} logoSrc={logoSrc} chip={club ? <TierChip tier={club.tier} /> : null} total={t.total} earned={earned} feedback={<FeedbackBox data={data} onSubmit={onSubmitFeedback} />} />
 
-        <div className="space-y-7 px-4 pt-7">
-          {/* 2. Video / banners */}
+        <div className="space-y-4 px-4 pt-4">
+          {/* 3. Video / banners */}
           <MarketingCarousel />
-          {/* 3. Points | Profile | Coupons */}
+          {/* 4. Points | Profile | Coupons */}
           <LoyaltyTabs data={data} earned={earned} onSaveProfile={onSaveProfile} />
         </div>
 
@@ -1435,10 +1436,7 @@ function ReceiptView({ data, history, onSelect, qrSrc, barcodeSrc, logoSrc = DEF
           <PaperEdge down />
         </section>
 
-        <div className="space-y-7 px-4 pt-9">
-          {/* 5. Rate your visit */}
-          <FeedbackBox data={data} onSubmit={onSubmitFeedback} />
-
+        <div className="space-y-4 px-4 pt-5">
           {/* 6. Refer a friend */}
           {referral && (
             <a href={whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => onRefer?.(referral.code)} className={`${REFER_CARD} group flex items-center justify-between gap-4 p-5`}>
